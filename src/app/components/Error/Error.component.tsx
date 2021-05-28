@@ -1,10 +1,6 @@
 import { AxiosError } from 'axios';
 import React from 'react';
-import styled from "styled-components";
-
-const ErrorStyled = styled.div`
-  border: 1px solid red;
-`
+import { ErrorStyled } from './Error.styled';
 
 interface ErrorProps {
   error: AxiosError
@@ -19,7 +15,7 @@ export function ErrorComponent(props: ErrorProps) {
   }
 
   return <ErrorStyled>
-    Houve um erro.
+    Houve um erro na conexão.
   </ErrorStyled>
 
 }

@@ -1,17 +1,7 @@
 import React, { useState } from 'react';
 import { useAppDispatch } from "app/hooks";
 import { newTask } from 'store/ducks/tasks.duck';
-import styled from 'styled-components';
-
-
-const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-`;
-
-const Input = styled.input`
-  margin: 5px 0;
-`;
+import { Form, Input } from './NewTask.styled';
 
 export function NewTask() {
   const dispatch = useAppDispatch();

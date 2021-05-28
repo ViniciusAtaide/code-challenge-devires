@@ -1,7 +1,4 @@
-/* eslint-disable */
-// Arquivo de exemplo e ajuda sem tipagens e interfaces
 import { createSlice, Dispatch, PayloadAction } from '@reduxjs/toolkit';
-import { AxiosError } from 'axios';
 import { RootState } from 'store';
 import { client } from '.';
 
@@ -22,6 +19,10 @@ export interface AddTask {
 
 export interface CheckTask {
   task: Task;
+}
+
+export interface DeleteTask {
+  taskId: number;
 }
 
 export interface State {
@@ -67,10 +68,15 @@ const tasksSlice = createSlice({
       }
       state.loading = false;
     },
+    taskDeleted: (state, { payload }: PayloadAction<DeleteTask>) => ({
+      ...state,
+      loading: false,
+      data: { tasks: state.data.tasks.filter(task => task.id !== payload.taskId) }
+    }),
   }
 });
 
-export const { taskAdded, taskChecked, toggleLoad, gotTasks, gotError } = tasksSlice.actions;
+export const { taskAdded, taskChecked, toggleLoad, gotTasks, gotError, taskDeleted } = tasksSlice.actions;
 
 export default tasksSlice.reducer;
 
@@ -103,13 +109,27 @@ export const newTask = (title: string, description: string) => async (
 
 export const checkTask = (task: Task) => async (
   dispatch: Dispatch,
-  state: () => RootState
+  _: () => RootState
 ) => {
   try {
     dispatch(toggleLoad({}));
     const r = await client.patch<Task>(`${process.env.REACT_APP_BASE_URL}/todos/${task.id}`, { done: !task.done });
-    console.log(r.data);
     dispatch(taskChecked({ task: r.data }))
+  } catch (e) {
+    dispatch(gotError(e.code));
+  }
+}
+
+export const deleteTask = (id: number) => async (
+  dispatch: Dispatch,
+  _: () => RootState,
+) => {
+  try {
+    dispatch(toggleLoad({}));
+    console.log('yo')
+    const r = await client.delete<null>(`${process.env.REACT_APP_BASE_URL}/todos/${id}`);
+    console.log(r.data);
+    dispatch(taskDeleted({ taskId: id }))
   } catch (e) {
     dispatch(gotError(e.code));
   }
